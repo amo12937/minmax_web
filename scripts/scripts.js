@@ -179,7 +179,7 @@
             pos = boardMaster.current.position();
             turn = boardMaster.current.turn();
             if (boardMaster.isFinished()) {
-              if (boardMaster.current.winner(turn)) {
+              if (boardMaster.current.result(turn)) {
                 return Infinity;
               } else {
                 return -Infinity;
@@ -555,7 +555,10 @@
             isFirst: function() {
               return pos[_white] === void 0 && pos[_black] === void 0;
             },
-            winner: function(t) {
+            result: function(t) {
+              if (t === void 0) {
+                return score[_black] - score[_white];
+              }
               return score[t] > score[_nextTurn(t)];
             }
           },
@@ -841,8 +844,8 @@
   "use strict";
   (function(modulePrefix) {
     return angular.module("" + modulePrefix + ".controllers", ["ng", "ngRoute", "" + modulePrefix + ".BoardMaster", "" + modulePrefix + ".Player", "" + modulePrefix + ".GameMaster", "" + modulePrefix + ".module.Translator"]).controller("" + modulePrefix + ".controllers.minmax", [
-      "$location", "$route", "$scope", "" + modulePrefix + ".BoardMaster.RandomScoreCreator", "" + modulePrefix + ".BoardMaster.Board", "" + modulePrefix + ".BoardMaster.BoardMaster", "" + modulePrefix + ".Player.Man", "" + modulePrefix + ".Player.Com", "" + modulePrefix + ".Player.Com.AlphaBeta", "" + modulePrefix + ".GameMaster.GameMaster", function($location, $route, $scope, RandomScoreCreator, Board, BoardMaster, Man, Com, ComAB, GameMaster) {
-        var board, boardMaster, createPlayer, createScore, gameMaster, gameMasterDelegate, options, opts, playerClass, playerTypes, players, toNum, _i, _ref, _results;
+      "$location", "$route", "$scope", "" + modulePrefix + ".BoardMaster.RandomScoreCreator", "" + modulePrefix + ".BoardMaster.Board", "" + modulePrefix + ".BoardMaster.BoardMaster", "" + modulePrefix + ".Player.Man", "" + modulePrefix + ".Player.Com", "" + modulePrefix + ".Player.Com.AlphaBeta", "" + modulePrefix + ".GameMaster.GameMaster", "amo.module.Translator.translatorCollection", function($location, $route, $scope, RandomScoreCreator, Board, BoardMaster, Man, Com, ComAB, GameMaster, translatorCollection) {
+        var board, boardMaster, createPlayer, createScore, gameMaster, gameMasterDelegate, options, opts, p1, p2, playerClass, playerTypes, players, toNum, translator, _i, _ref, _results;
         playerTypes = {
           "MAN": "MAN",
           "COM": "COM",
@@ -862,17 +865,18 @@
         createPlayer = function(type, name, level, delay) {
           return playerClass[type](name, $scope.boardMaster, Math.max(level, 1), Math.max(delay, 0));
         };
+        translator = translatorCollection.getTranslator("trans");
         opts = $location.search();
         options = {
           min: toNum(opts.min, -10),
           max: toNum(opts.max, 10),
           rank: toNum(opts.rank, 7),
           p1: opts.p1 || playerTypes.MAN,
-          p1_name: opts.p1_name || "you",
+          p1_name: opts.p1_name || translator("You"),
           p1_level: toNum(opts.p1_level, 5),
           p1_delay: toNum(opts.p1_delay, 100),
           p2: opts.p2 || playerTypes.COM,
-          p2_name: opts.p2_name || "com",
+          p2_name: opts.p2_name || translator("Com"),
           p2_level: toNum(opts.p2_level, 5),
           p2_delay: toNum(opts.p2_delay, 100)
         };
@@ -887,11 +891,22 @@
           return _results;
         }).apply(this);
         players = {};
-        players[boardMaster["const"].TURN.BLACK] = createPlayer(options.p1, options.p1_name, options.p1_level, options.p1_delay);
-        players[boardMaster["const"].TURN.WHITE] = createPlayer(options.p2, options.p2_name, options.p2_level, options.p2_delay);
+        players[boardMaster["const"].TURN.BLACK] = p1 = createPlayer(options.p1, options.p1_name, options.p1_level, options.p1_delay);
+        players[boardMaster["const"].TURN.WHITE] = p2 = createPlayer(options.p2, options.p2_name, options.p2_level, options.p2_delay);
         gameMasterDelegate = {
           endGame: function() {
-            return console.log("end");
+            var result;
+            console.log("end");
+            result = boardMaster.current.result();
+            if (result > 0) {
+              return $scope.winner = {
+                name: p1.name()
+              };
+            } else if (result < 0) {
+              return $scope.winner = {
+                name: p2.name()
+              };
+            }
           },
           stop: function() {
             return console.log("stop");

@@ -2,11 +2,11 @@
   <div class='boardMaster' style='width: {{boardMaster.const.rank() * 40}}px;'>
     <div class='score'>
       <div class='score-item black col-xs-6' ng-class="{'current-turn':boardMaster.current.turn(boardMaster.const.TURN.BLACK) &amp;&amp; !boardMaster.isFinished()}">
-        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.winner(boardMaster.const.TURN.BLACK)'></i>
+        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.result() &gt; 0'></i>
         {{ boardMaster.current.score(boardMaster.const.TURN.BLACK) }}
       </div>
       <div class='score-item white col-xs-6' ng-class="{'current-turn':boardMaster.current.turn(boardMaster.const.TURN.WHITE) &amp;&amp; !boardMaster.isFinished()}">
-        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.winner(boardMaster.const.TURN.WHITE)'></i>
+        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.result() &lt; 0'></i>
         {{ boardMaster.current.score(boardMaster.const.TURN.WHITE) }}
       </div>
     </div>
@@ -17,6 +17,10 @@
         </div>
       </div>
     </div>
+  </div>
+  <div class='result' ng-show='boardMaster.isFinished()'>
+    <label ng-show='boardMaster.current.result() == 0'>{{ "Drawn!"|trans }}</label>
+    <label ng-hide='boardMaster.current.result() == 0'>{{ "%name% win!"|trans:{name:winner.name} }}</label>
   </div>
   <div class='menu' ng-show='boardMaster.isFinished()'>
     <div class='commands'>

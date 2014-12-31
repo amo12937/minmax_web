@@ -111,7 +111,10 @@
             isFirst: function() {
               return pos[_white] === void 0 && pos[_black] === void 0;
             },
-            winner: function(t) {
+            result: function(t) {
+              if (t === void 0) {
+                return score[_black] - score[_white];
+              }
               return score[t] > score[_nextTurn(t)];
             }
           },

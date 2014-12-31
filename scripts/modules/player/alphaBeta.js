@@ -24,7 +24,7 @@
             pos = boardMaster.current.position();
             turn = boardMaster.current.turn();
             if (boardMaster.isFinished()) {
-              if (boardMaster.current.winner(turn)) {
+              if (boardMaster.current.result(turn)) {
                 return Infinity;
               } else {
                 return -Infinity;
