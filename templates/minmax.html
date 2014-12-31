@@ -18,18 +18,24 @@
       </div>
     </div>
   </div>
+  <div class='sns'>
+    <div class='twitter'>
+      <a class='twitter-hashtag-button' data-related='amoO_O' data-url='http://amo12937.github.io/minmax_web/' href='https://twitter.com/intent/tweet?button_hashtag=minmaxO_O&amp;text=minmax'>Tweet #minmaxO_O</a>
+      <script type='text/javascript-lazy'>
+        !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+      </script>
+    </div>
+  </div>
   <div class='result' ng-show='boardMaster.isFinished()'>
     <label ng-show='boardMaster.current.result() == 0'>{{ "Drawn!"|trans }}</label>
     <label ng-hide='boardMaster.current.result() == 0'>{{ "%name% win!"|trans:{name:winner.name} }}</label>
   </div>
   <div class='menu' ng-show='boardMaster.isFinished()'>
-    <div class='commands'>
-      <div class='command'>
+    <div class='form-inline'>
+      <div class='form-group'>
         <button class='btn btn-default' ng-click='play()'>{{ "replay"|trans }}</button>
       </div>
-    </div>
-    <div class='configs'>
-      <div class='config form-inline'>
+      <div class='form-group'>
         <label>{{ "level"|trans }}</label>
         <select class='form-control' ng-model='p2_level' ng-options='v for v in levels'></select>
       </div>
