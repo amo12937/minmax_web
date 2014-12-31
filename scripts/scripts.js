@@ -875,7 +875,7 @@
           p1_name: opts.p1_name || translator("You"),
           p1_level: toNum(opts.p1_level, 5),
           p1_delay: toNum(opts.p1_delay, 100),
-          p2: opts.p2 || playerTypes.COM,
+          p2: opts.p2 || playerTypes.COMAB,
           p2_name: opts.p2_name || translator("Com"),
           p2_level: toNum(opts.p2_level, 5),
           p2_delay: toNum(opts.p2_delay, 100)
