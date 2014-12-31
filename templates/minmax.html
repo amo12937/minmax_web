@@ -1,0 +1,46 @@
+<div class='minmax'>
+  <div class='boardMaster' style='width: {{boardMaster.const.rank() * 40}}px;'>
+    <div class='score'>
+      <div class='score-item black col-xs-6' ng-class="{'current-turn':boardMaster.current.turn(boardMaster.const.TURN.BLACK) &amp;&amp; !boardMaster.isFinished()}">
+        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.winner(boardMaster.const.TURN.BLACK)'></i>
+        {{ boardMaster.current.score(boardMaster.const.TURN.BLACK) }}
+      </div>
+      <div class='score-item white col-xs-6' ng-class="{'current-turn':boardMaster.current.turn(boardMaster.const.TURN.WHITE) &amp;&amp; !boardMaster.isFinished()}">
+        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.winner(boardMaster.const.TURN.WHITE)'></i>
+        {{ boardMaster.current.score(boardMaster.const.TURN.WHITE) }}
+      </div>
+    </div>
+    <div class='board'>
+      <div class='row' ng-repeat='i in rankList'>
+        <div class='panel col-md-1' ng-class='{selectable: boardMaster.selectable([i, j]), used: boardMaster.used([i, j])}' ng-click='clickCell(i, j)' ng-repeat='j in rankList' style='width: 40px; height: 40px;'>
+          <div class='inner-panel'>{{ boardMaster.get([i, j]) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class='menu' ng-show='boardMaster.isFinished()'>
+    <div class='commands'>
+      <div class='command'>
+        <button class='btn btn-default' ng-click='play()'>{{ "replay"|trans }}</button>
+      </div>
+    </div>
+    <div class='configs'>
+      <div class='config form-inline'>
+        <label>{{ "level"|trans }}</label>
+        <select class='form-control' ng-model='p2_level' ng-options='v for v in levels'></select>
+      </div>
+    </div>
+  </div>
+  <div class='help'>
+    <h2>{{ "How to play"|trans }}</h2>
+    <ul>
+      <li>{{ "It is the game to compete the total score by taking panel alternately."|trans }}</li>
+      <li>{{ "First-move can choose any panel at first."|trans }}</li>
+      <li>{{ "Second-move can choose the panel on the same col that chosen by First-move."|trans }}</li>
+      <li>{{ "First-move can choose the panel on the same row that chosen by Second-move."|trans }}</li>
+      <li>{{ "You can not choose the panel already chosen."|trans }}</li>
+      <li>{{ "You can not pass."|trans }}</li>
+      <li>{{ "The game ends when no panels can choose."|trans}}</li>
+    </ul>
+  </div>
+</div>

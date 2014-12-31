@@ -1,0 +1,57 @@
+.minmax {
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.minmax .boardMaster {
+  margin: 15px auto;
+}
+
+.minmax .boardMaster .score .score-item {
+  text-align: center;
+  font-size: 28px;
+}
+.minmax .boardMaster .score .current-turn {
+  background-color: #ccffcc
+}
+
+.minmax .row {
+  margin: 0;
+  clear: both;
+}
+
+.minmax .panel {
+  background-color: #ffaaaa;
+  margin: 0px;
+  padding: 0px;
+  border: solid 1px;
+  float: left;
+  display: table;
+  text-align: center;
+}
+
+.minmax .panel .inner-panel {
+  font-size: 18px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.minmax .panel.selectable {
+  background-color: #ccffcc;
+}
+
+.minmax .panel.used {
+  background-color: #888888;
+}
+
+.minmax .menu {
+  margin: 15px auto;
+}
+
+.minmax .command {
+  text-align: center;
+}
+
+.minmax .config {
+  text-align: center;
+}
