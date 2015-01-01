@@ -19,7 +19,7 @@
         };
       }
     ]);
-  })("amo.minmax.module.Translator");
+  })("amo.minmax.module.translator");
 
 }).call(this);
 

@@ -62,84 +62,21 @@
 ;(function() {
   "use strict";
   (function(moduleName) {
-    return angular.module(moduleName).factory("" + moduleName + ".Com", [
+    return angular.module(moduleName).factory("" + moduleName + ".Com.Base", [
       "$timeout", "" + moduleName + ".PlayerBase", function($timeout, PlayerBase) {
         return function(name, boardMaster, maxDepth, delay) {
-          var choice, choiceFirst, l, self, _i, _ref, _results;
+          var self;
           if (maxDepth == null) {
             maxDepth = 7;
           }
           if (delay == null) {
             delay = 0;
           }
-          l = (function() {
-            _results = [];
-            for (var _i = 0, _ref = boardMaster["const"].rank() - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
-            return _results;
-          }).apply(this);
-          choice = function(depth) {
-            var i, pos, result, s, s2, score, turn, _, _j, _len, _ref1;
-            if (depth <= 0) {
-              return [0, [0, 0]];
-            }
-            if (boardMaster.isFinished()) {
-              return [0, [0, 0]];
-            }
-            pos = boardMaster.current.position();
-            turn = boardMaster.current.turn();
-            score = -Infinity;
-            result = 0;
-            for (_j = 0, _len = l.length; _j < _len; _j++) {
-              i = l[_j];
-              pos[turn] = i;
-              if (!boardMaster.selectable(pos)) {
-                continue;
-              }
-              boardMaster.select(pos);
-              s = boardMaster.current.score(turn);
-              _ref1 = choice(depth - 1), s2 = _ref1[0], _ = _ref1[1];
-              s -= s2;
-              boardMaster.undo();
-              if (s > score) {
-                score = s;
-                result = i;
-              }
-            }
-            pos[turn] = result;
-            return [score, pos];
-          };
-          choiceFirst = function(depth) {
-            var i, j, pos, result, s, s2, score, turn, _, _j, _k, _len, _len1, _ref1;
-            turn = boardMaster.current.turn();
-            score = -Infinity;
-            result = 0;
-            for (_j = 0, _len = l.length; _j < _len; _j++) {
-              i = l[_j];
-              for (_k = 0, _len1 = l.length; _k < _len1; _k++) {
-                j = l[_k];
-                pos = [i, j];
-                boardMaster.select(pos);
-                s = boardMaster.current.score(turn);
-                _ref1 = choice(depth - 1), s2 = _ref1[0], _ = _ref1[1];
-                s -= s2;
-                boardMaster.undo();
-                if (s > score) {
-                  score = s;
-                  result = pos;
-                }
-              }
-            }
-            return [score, result];
-          };
           self = PlayerBase(name);
           self.play = function(callback) {
             return $timeout(function() {
-              var pos, _, _ref1, _ref2;
-              if (boardMaster.current.isFirst()) {
-                _ref1 = choiceFirst(maxDepth), _ = _ref1[0], pos = _ref1[1];
-              } else {
-                _ref2 = choice(maxDepth), _ = _ref2[0], pos = _ref2[1];
-              }
+              var pos;
+              pos = self.getChosen(maxDepth);
               boardMaster.select(pos);
               return callback(boardMaster.isFinished());
             }, delay);
@@ -152,12 +89,12 @@
 
 }).call(this);
 
-//# sourceMappingURL=com.js.map
+//# sourceMappingURL=base.js.map
 ;(function() {
   "use strict";
   (function(moduleName) {
     return angular.module(moduleName).factory("" + moduleName + ".Com.AlphaBeta", [
-      "$timeout", "" + moduleName + ".PlayerBase", function($timeout, PlayerBase) {
+      "" + moduleName + ".Com.Base", function(ComBase) {
         return function(name, boardMaster, maxDepth, delay) {
           var choice, choiceFirst, choiceNext, l, self, _i, _ref, _results;
           if (maxDepth == null) {
@@ -256,18 +193,13 @@
             pos[turn] = result;
             return pos;
           };
-          self = PlayerBase(name);
-          self.play = function(callback) {
-            return $timeout(function() {
-              var pos;
-              if (boardMaster.current.isFirst()) {
-                pos = choiceFirst(maxDepth);
-              } else {
-                pos = choiceNext(maxDepth);
-              }
-              boardMaster.select(pos);
-              return callback(boardMaster.isFinished());
-            }, delay);
+          self = ComBase(name, boardMaster, maxDepth, delay);
+          self.getChosen = function(depth) {
+            if (boardMaster.current.isFirst()) {
+              return choiceFirst(maxDepth);
+            } else {
+              return choiceNext(maxDepth);
+            }
           };
           return self;
         };
@@ -280,84 +212,135 @@
 //# sourceMappingURL=alphaBeta.js.map
 ;(function() {
   "use strict";
-  var __slice = [].slice;
-
   (function(moduleName) {
-    var Translator;
-    Translator = function($filter, name, rules) {
-      var self;
-      if (rules == null) {
-        rules = {};
-      }
-      self = function(key, context) {
-        var attrs, filter, filterName, filterNames, k, result, v, _i, _len, _ref, _ref1;
-        if (context == null) {
-          context = {};
-        }
-        result = rules[key] || key;
-        for (k in context) {
-          v = context[k];
-          _ref = v instanceof Array ? v : [v], v = _ref[0], filterNames = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
-          for (_i = 0, _len = filterNames.length; _i < _len; _i++) {
-            filterName = filterNames[_i];
-            _ref1 = filterName instanceof Array ? filterName : [filterName], filterName = _ref1[0], attrs = 2 <= _ref1.length ? __slice.call(_ref1, 1) : [];
-            filter = $filter(filterName);
-            v = filter.apply(filter, [v].concat(__slice.call(attrs)));
+    return angular.module(moduleName).factory("" + moduleName + ".Com", [
+      "" + moduleName + ".Com.Base", function(ComBase) {
+        return function(name, boardMaster, maxDepth, delay) {
+          var choice, choiceFirst, l, self, _i, _ref, _results;
+          if (maxDepth == null) {
+            maxDepth = 7;
           }
-          result = result.split("%" + k + "%").join(v);
-        }
-        return result;
-      };
-      self.setRules = function(r) {
-        if (r == null) {
-          r = {};
-        }
-        return rules = r;
-      };
-      self.getName = function() {
-        return name;
-      };
-      return self;
-    };
-    return angular.module(moduleName, ["ng"]).provider("" + moduleName + ".translatorCollection", [
-      "$filterProvider", function($filterProvider) {
-        var _collection;
-        _collection = {};
-        return {
-          registerTranslator: function(name) {
-            return $filterProvider.register(name, [
-              "" + moduleName + ".translatorCollection", function(tc) {
-                var translator;
-                translator = tc.getTranslator(name);
-                return function() {
-                  return translator.apply(void 0, arguments);
-                };
-              }
-            ]);
-          },
-          $get: [
-            "$filter", function($filter) {
-              return {
-                getTranslator: function(name) {
-                  return _collection[name] != null ? _collection[name] : _collection[name] = Translator($filter, name);
-                }
-              };
+          if (delay == null) {
+            delay = 0;
+          }
+          l = (function() {
+            _results = [];
+            for (var _i = 0, _ref = boardMaster["const"].rank() - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; 0 <= _ref ? _i++ : _i--){ _results.push(_i); }
+            return _results;
+          }).apply(this);
+          choice = function(depth) {
+            var i, pos, result, s, s2, score, turn, _, _j, _len, _ref1;
+            if (depth <= 0) {
+              return [0, [0, 0]];
             }
-          ]
+            pos = boardMaster.current.position();
+            turn = boardMaster.current.turn();
+            if (boardMaster.isFinished()) {
+              if (boardMaster.current.result(turn)) {
+                return [Infinity, [0, 0]];
+              } else {
+                return [-Infinity, [0, 0]];
+              }
+            }
+            score = -Infinity;
+            result = 0;
+            for (_j = 0, _len = l.length; _j < _len; _j++) {
+              i = l[_j];
+              pos[turn] = i;
+              if (!boardMaster.selectable(pos)) {
+                continue;
+              }
+              boardMaster.select(pos);
+              s = boardMaster.current.score(turn);
+              _ref1 = choice(depth - 1), s2 = _ref1[0], _ = _ref1[1];
+              s -= s2;
+              boardMaster.undo();
+              if (s > score) {
+                score = s;
+                result = i;
+              }
+            }
+            pos[turn] = result;
+            return [score, pos];
+          };
+          choiceFirst = function(depth) {
+            var i, j, pos, result, s, s2, score, turn, _, _j, _k, _len, _len1, _ref1;
+            turn = boardMaster.current.turn();
+            score = -Infinity;
+            result = 0;
+            for (_j = 0, _len = l.length; _j < _len; _j++) {
+              i = l[_j];
+              for (_k = 0, _len1 = l.length; _k < _len1; _k++) {
+                j = l[_k];
+                pos = [i, j];
+                boardMaster.select(pos);
+                s = boardMaster.current.score(turn);
+                _ref1 = choice(depth - 1), s2 = _ref1[0], _ = _ref1[1];
+                s -= s2;
+                boardMaster.undo();
+                if (s > score) {
+                  score = s;
+                  result = pos;
+                }
+              }
+            }
+            return [score, result];
+          };
+          self = ComBase(name, boardMaster, maxDepth, delay);
+          self.getChosen = function(depth) {
+            if (boardMaster.current.isFirst()) {
+              return choiceFirst(depth)[1];
+            } else {
+              return choice(depth)[1];
+            }
+          };
+          return self;
         };
       }
     ]);
-  })("amo.module.Translator");
+  })("amo.minmax.Player");
 
 }).call(this);
 
-//# sourceMappingURL=translatorCollection.js.map
+//# sourceMappingURL=com.js.map
 ;(function() {
   "use strict";
   (function(moduleName) {
-    var translatorModuleName;
-    translatorModuleName = "amo.module.Translator";
-    return angular.module(moduleName, ["ng", translatorModuleName]).value("" + moduleName + ".config", {
+    return angular.module(moduleName).factory("" + moduleName + ".Com.DoubleChecker", [
+      "" + moduleName + ".Com.Base", "" + moduleName + ".Com.AlphaBeta", "" + moduleName + ".Com", function(ComBase, AlphaBeta, MinMax) {
+        return function(name, boardMaster, maxDepth, delay) {
+          var ab, mm, self;
+          if (maxDepth == null) {
+            maxDepth = 7;
+          }
+          if (delay == null) {
+            delay = 0;
+          }
+          ab = AlphaBeta(name, boardMaster, maxDepth, delay);
+          mm = MinMax(name, boardMaster, maxDepth, delay);
+          self = ComBase(name, boardMaster, maxDepth, delay);
+          self.getChosen = function(depth) {
+            var abPos, mmPos;
+            abPos = ab.getChosen(depth);
+            mmPos = mm.getChosen(depth);
+            if (!(abPos[0] === mmPos[0] && abPos[1] === mmPos[1])) {
+              console.log("abPos = (" + abPos + "), mmPos = (" + mmPos + ")");
+            }
+            return abPos;
+          };
+          return self;
+        };
+      }
+    ]);
+  })("amo.minmax.Player");
+
+}).call(this);
+
+//# sourceMappingURL=doubleChecker.js.map
+;(function() {
+  "use strict";
+  (function(moduleName) {
+    return angular.module(moduleName, ["ng", "amo.module.translator"]).value("" + moduleName + ".config", {
       resourceDir: "res/minmax/translator/",
       resourceExt: ".json",
       loader: {
@@ -375,7 +358,7 @@
         }
       }
     });
-  })("amo.minmax.module.Translator");
+  })("amo.minmax.module.translator");
 
 }).call(this);
 
@@ -401,7 +384,7 @@
         };
       }
     ]);
-  })("amo.minmax.module.Translator");
+  })("amo.minmax.module.translator");
 
 }).call(this);
 
@@ -410,7 +393,7 @@
   "use strict";
   (function(moduleName) {
     var translatorModuleName, translatorName;
-    translatorModuleName = "amo.module.Translator";
+    translatorModuleName = "amo.module.translator";
     translatorName = "trans";
     return angular.module(moduleName).config([
       "" + translatorModuleName + ".translatorCollectionProvider", function(tcProvider) {
@@ -426,18 +409,18 @@
             "$location", "" + translatorModuleName + ".translatorCollection", "" + moduleName + ".api.GetRule", function($location, tc, GetRuleApi) {
               var lang, query, translator;
               query = $location.search();
-              lang = query.lang || "jp";
+              lang = query.lang || "ja";
               translator = tc.getTranslator(translatorName);
-              translator.setRules({});
+              translator.setRule({});
               return GetRuleApi().request("" + lang + "/" + translatorName).then(function(response) {
-                translator.setRules(response.data);
+                translator.setRule(response.data);
               });
             }
           ];
         }
       };
     });
-  })("amo.minmax.module.Translator");
+  })("amo.minmax.module.translator");
 
 }).call(this);
 
@@ -843,18 +826,20 @@
 ;(function() {
   "use strict";
   (function(modulePrefix) {
-    return angular.module("" + modulePrefix + ".controllers", ["ng", "ngRoute", "" + modulePrefix + ".BoardMaster", "" + modulePrefix + ".Player", "" + modulePrefix + ".GameMaster", "" + modulePrefix + ".module.Translator"]).controller("" + modulePrefix + ".controllers.minmax", [
-      "$location", "$route", "$scope", "" + modulePrefix + ".BoardMaster.RandomScoreCreator", "" + modulePrefix + ".BoardMaster.Board", "" + modulePrefix + ".BoardMaster.BoardMaster", "" + modulePrefix + ".Player.Man", "" + modulePrefix + ".Player.Com", "" + modulePrefix + ".Player.Com.AlphaBeta", "" + modulePrefix + ".GameMaster.GameMaster", "amo.module.Translator.translatorCollection", function($location, $route, $scope, RandomScoreCreator, Board, BoardMaster, Man, Com, ComAB, GameMaster, translatorCollection) {
+    return angular.module("" + modulePrefix + ".controllers", ["ng", "ngRoute", "" + modulePrefix + ".BoardMaster", "" + modulePrefix + ".Player", "" + modulePrefix + ".GameMaster", "" + modulePrefix + ".module.translator"]).controller("" + modulePrefix + ".controllers.minmax", [
+      "$location", "$route", "$scope", "" + modulePrefix + ".BoardMaster.RandomScoreCreator", "" + modulePrefix + ".BoardMaster.Board", "" + modulePrefix + ".BoardMaster.BoardMaster", "" + modulePrefix + ".Player.Man", "" + modulePrefix + ".Player.Com.AlphaBeta", "" + modulePrefix + ".Player.Com", "" + modulePrefix + ".Player.Com.DoubleChecker", "" + modulePrefix + ".GameMaster.GameMaster", "amo.module.translator.translatorCollection", function($location, $route, $scope, RandomScoreCreator, Board, BoardMaster, Man, ComAB, Com, ComDC, GameMaster, translatorCollection) {
         var board, boardMaster, createPlayer, createScore, gameMaster, gameMasterDelegate, options, opts, p1, p2, playerClass, playerTypes, players, toNum, translator, _i, _ref, _results;
         playerTypes = {
           "MAN": "MAN",
           "COM": "COM",
-          "COMAB": "COMAB"
+          "COMAB": "COMAB",
+          "COMDC": "COMDC"
         };
         playerClass = {
           MAN: Man,
           COM: Com,
-          COMAB: ComAB
+          COMAB: ComAB,
+          COMDC: ComDC
         };
         toNum = function(n, d) {
           if (!n) {
@@ -936,7 +921,7 @@
   "use strict";
   (function(moduleName) {
     return angular.module(moduleName).config([
-      "$routeProvider", "amo.minmax.module.Translator.transResolverProvider", function($routeProvider, transResolverProvider) {
+      "$routeProvider", "amo.minmax.module.translator.transResolverProvider", function($routeProvider, transResolverProvider) {
         return $routeProvider.when("/", {
           templateUrl: "templates/minmax.html",
           controller: "" + moduleName + ".minmax",

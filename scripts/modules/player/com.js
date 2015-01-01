@@ -2,7 +2,7 @@
   "use strict";
   (function(moduleName) {
     return angular.module(moduleName).factory("" + moduleName + ".Com", [
-      "$timeout", "" + moduleName + ".PlayerBase", function($timeout, PlayerBase) {
+      "" + moduleName + ".Com.Base", function(ComBase) {
         return function(name, boardMaster, maxDepth, delay) {
           var choice, choiceFirst, l, self, _i, _ref, _results;
           if (maxDepth == null) {
@@ -21,11 +21,15 @@
             if (depth <= 0) {
               return [0, [0, 0]];
             }
-            if (boardMaster.isFinished()) {
-              return [0, [0, 0]];
-            }
             pos = boardMaster.current.position();
             turn = boardMaster.current.turn();
+            if (boardMaster.isFinished()) {
+              if (boardMaster.current.result(turn)) {
+                return [Infinity, [0, 0]];
+              } else {
+                return [-Infinity, [0, 0]];
+              }
+            }
             score = -Infinity;
             result = 0;
             for (_j = 0, _len = l.length; _j < _len; _j++) {
@@ -70,18 +74,13 @@
             }
             return [score, result];
           };
-          self = PlayerBase(name);
-          self.play = function(callback) {
-            return $timeout(function() {
-              var pos, _, _ref1, _ref2;
-              if (boardMaster.current.isFirst()) {
-                _ref1 = choiceFirst(maxDepth), _ = _ref1[0], pos = _ref1[1];
-              } else {
-                _ref2 = choice(maxDepth), _ = _ref2[0], pos = _ref2[1];
-              }
-              boardMaster.select(pos);
-              return callback(boardMaster.isFinished());
-            }, delay);
+          self = ComBase(name, boardMaster, maxDepth, delay);
+          self.getChosen = function(depth) {
+            if (boardMaster.current.isFirst()) {
+              return choiceFirst(depth)[1];
+            } else {
+              return choice(depth)[1];
+            }
           };
           return self;
         };

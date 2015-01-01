@@ -2,7 +2,7 @@
   "use strict";
   (function(moduleName) {
     var translatorModuleName, translatorName;
-    translatorModuleName = "amo.module.Translator";
+    translatorModuleName = "amo.module.translator";
     translatorName = "trans";
     return angular.module(moduleName).config([
       "" + translatorModuleName + ".translatorCollectionProvider", function(tcProvider) {
@@ -18,18 +18,18 @@
             "$location", "" + translatorModuleName + ".translatorCollection", "" + moduleName + ".api.GetRule", function($location, tc, GetRuleApi) {
               var lang, query, translator;
               query = $location.search();
-              lang = query.lang || "jp";
+              lang = query.lang || "ja";
               translator = tc.getTranslator(translatorName);
-              translator.setRules({});
+              translator.setRule({});
               return GetRuleApi().request("" + lang + "/" + translatorName).then(function(response) {
-                translator.setRules(response.data);
+                translator.setRule(response.data);
               });
             }
           ];
         }
       };
     });
-  })("amo.minmax.module.Translator");
+  })("amo.minmax.module.translator");
 
 }).call(this);
 

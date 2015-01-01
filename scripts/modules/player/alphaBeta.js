@@ -2,7 +2,7 @@
   "use strict";
   (function(moduleName) {
     return angular.module(moduleName).factory("" + moduleName + ".Com.AlphaBeta", [
-      "$timeout", "" + moduleName + ".PlayerBase", function($timeout, PlayerBase) {
+      "" + moduleName + ".Com.Base", function(ComBase) {
         return function(name, boardMaster, maxDepth, delay) {
           var choice, choiceFirst, choiceNext, l, self, _i, _ref, _results;
           if (maxDepth == null) {
@@ -101,18 +101,13 @@
             pos[turn] = result;
             return pos;
           };
-          self = PlayerBase(name);
-          self.play = function(callback) {
-            return $timeout(function() {
-              var pos;
-              if (boardMaster.current.isFirst()) {
-                pos = choiceFirst(maxDepth);
-              } else {
-                pos = choiceNext(maxDepth);
-              }
-              boardMaster.select(pos);
-              return callback(boardMaster.isFinished());
-            }, delay);
+          self = ComBase(name, boardMaster, maxDepth, delay);
+          self.getChosen = function(depth) {
+            if (boardMaster.current.isFirst()) {
+              return choiceFirst(maxDepth);
+            } else {
+              return choiceNext(maxDepth);
+            }
           };
           return self;
         };

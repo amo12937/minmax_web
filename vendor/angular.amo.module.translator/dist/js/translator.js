@@ -4,17 +4,17 @@
 
   (function(moduleName) {
     var Translator;
-    Translator = function($filter, name, rules) {
+    Translator = function($filter, name, rule) {
       var self;
-      if (rules == null) {
-        rules = {};
+      if (rule == null) {
+        rule = {};
       }
       self = function(key, context) {
         var attrs, filter, filterName, filterNames, k, result, v, _i, _len, _ref, _ref1;
         if (context == null) {
           context = {};
         }
-        result = rules[key] || key;
+        result = rule[key] || key;
         for (k in context) {
           v = context[k];
           _ref = v instanceof Array ? v : [v], v = _ref[0], filterNames = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
@@ -28,11 +28,11 @@
         }
         return result;
       };
-      self.setRules = function(r) {
+      self.setRule = function(r) {
         if (r == null) {
           r = {};
         }
-        return rules = r;
+        return rule = r;
       };
       self.getName = function() {
         return name;
@@ -47,11 +47,7 @@
           registerTranslator: function(name) {
             return $filterProvider.register(name, [
               "" + moduleName + ".translatorCollection", function(tc) {
-                var translator;
-                translator = tc.getTranslator(name);
-                return function() {
-                  return translator.apply(void 0, arguments);
-                };
+                return tc.getTranslator(name);
               }
             ]);
           },
@@ -67,8 +63,6 @@
         };
       }
     ]);
-  })("amo.module.Translator");
+  })("amo.module.translator");
 
 }).call(this);
-
-//# sourceMappingURL=translatorCollection.js.map

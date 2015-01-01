@@ -1,9 +1,7 @@
 (function() {
   "use strict";
   (function(moduleName) {
-    var translatorModuleName;
-    translatorModuleName = "amo.module.Translator";
-    return angular.module(moduleName, ["ng", translatorModuleName]).value("" + moduleName + ".config", {
+    return angular.module(moduleName, ["ng", "amo.module.translator"]).value("" + moduleName + ".config", {
       resourceDir: "res/minmax/translator/",
       resourceExt: ".json",
       loader: {
@@ -21,7 +19,7 @@
         }
       }
     });
-  })("amo.minmax.module.Translator");
+  })("amo.minmax.module.translator");
 
 }).call(this);
 
