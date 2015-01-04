@@ -1,19 +1,19 @@
 <div class='minmax'>
-  <div class='boardMaster' style='width: {{boardMaster.const.rank() * 40}}px;'>
+  <div class='boardMaster' style='width: {{board.const.rank() * 40}}px;'>
     <div class='score'>
-      <div class='score-item black col-xs-6' ng-class="{'current-turn':boardMaster.current.turn(boardMaster.const.TURN.BLACK) &amp;&amp; !boardMaster.isFinished()}">
-        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.result() &gt; 0'></i>
-        {{ boardMaster.current.score(boardMaster.const.TURN.BLACK) }}
+      <div class='score-item black col-xs-6' ng-class="{'current-turn':board.current.turn(board.const.TURN.BLACK) &amp;&amp; !board.isFinished()}">
+        <i class='fa fa-star-o' ng-show='board.isFinished() &amp;&amp; board.current.value(board.const.TURN.BLACK) &gt; 0'></i>
+        {{ board.current.score(board.const.TURN.BLACK) }}
       </div>
-      <div class='score-item white col-xs-6' ng-class="{'current-turn':boardMaster.current.turn(boardMaster.const.TURN.WHITE) &amp;&amp; !boardMaster.isFinished()}">
-        <i class='fa fa-star-o' ng-show='boardMaster.isFinished() &amp;&amp; boardMaster.current.result() &lt; 0'></i>
-        {{ boardMaster.current.score(boardMaster.const.TURN.WHITE) }}
+      <div class='score-item white col-xs-6' ng-class="{'current-turn':board.current.turn(board.const.TURN.WHITE) &amp;&amp; !board.isFinished()}">
+        <i class='fa fa-star-o' ng-show='board.isFinished() &amp;&amp; board.current.value(board.const.TURN.WHITE) &gt; 0'></i>
+        {{ board.current.score(board.const.TURN.WHITE) }}
       </div>
     </div>
     <div class='board'>
       <div class='row' ng-repeat='i in rankList'>
-        <div class='panel col-md-1' ng-class='{selectable: boardMaster.selectable([i, j]), used: boardMaster.used([i, j])}' ng-click='clickCell(i, j)' ng-repeat='j in rankList' style='width: 40px; height: 40px;'>
-          <div class='inner-panel'>{{ boardMaster.get([i, j]) }}</div>
+        <div class='panel col-md-1' ng-class='{selectable: board.selectable([i, j]), used: board.used([i, j])}' ng-click='clickCell(i, j)' ng-repeat='j in rankList' style='width: 40px; height: 40px;'>
+          <div class='inner-panel'>{{ board.get([i, j]) }}</div>
         </div>
       </div>
     </div>
@@ -26,11 +26,11 @@
       </script>
     </div>
   </div>
-  <div class='result' ng-show='boardMaster.isFinished()'>
-    <label ng-show='boardMaster.current.result() == 0'>{{ "Drawn!"|trans }}</label>
-    <label ng-hide='boardMaster.current.result() == 0'>{{ "%name% win!"|trans:{name:winner.name} }}</label>
+  <div class='result' ng-show='board.isFinished()'>
+    <label ng-show='board.current.value(board.const.TURN.BLACK) == 0'>{{ "Drawn!"|trans }}</label>
+    <label ng-hide='board.current.value(board.const.TURN.BLACK) == 0'>{{ "%name% win!"|trans:{name:winner.name} }}</label>
   </div>
-  <div class='menu' ng-show='boardMaster.isFinished()'>
+  <div class='menu' ng-show='board.isFinished()'>
     <div class='form-inline'>
       <div class='form-group'>
         <button class='btn btn-default' ng-click='play()'>{{ "replay"|trans }}</button>
